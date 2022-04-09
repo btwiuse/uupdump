@@ -1,0 +1,15 @@
+[package]
+name = "uupdump"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "select uuid from the frontpage of uupdump.net"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "uupdump"
+path = "main.rs"
+
+[dependencies]
+html_editor = "0.4"
