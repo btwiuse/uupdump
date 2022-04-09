@@ -1,6 +1,6 @@
 [package]
 name = "uupdump"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 description = "interactively retrieve uuid of recent Win11 iso images from uupdump.net"
@@ -17,3 +17,4 @@ rphtml = "0.5"
 table-extract = "0.2"
 skim = "0.9"
 dialoguer = "0.10"
+reqwest = { version = "0.11", features = ["blocking"] }

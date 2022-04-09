@@ -5,14 +5,16 @@ use rphtml::types::HResult;
 
 // fn main() -> Result<(), anyhow::Error> {
 fn main() -> HResult {
+    let index = reqwest::blocking::get("https://uupdump.net/")?.text()?;
+    // println!("{}", resp);
     //fn main() -> Result<(), String> {
-    let index = include_str!("index.html");
+    // let index = include_str!("index.html");
     // let index = prettyish_html::prettify(index);
     // let index = html_editor::parse(&index)?;
     // let index = html_parser::Dom::parse(index)?;
 
     let doc = Doc::parse(
-        index,
+        &index,
         ParseOptions {
             case_sensitive_tagname: false, // 解析时标签区分大小写，`<div>` 和 `<DIV>` 将被视作不同标签，不建议开启
             allow_self_closing: true,      // 允许非替换元素使用自闭合的写法，如 `<div class='' />`
