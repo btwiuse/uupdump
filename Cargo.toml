@@ -15,6 +15,7 @@ path = "main.rs"
 html_editor = "0.4"
 rphtml = "0.5"
 table-extract = "0.2"
-skim = "0.9"
 dialoguer = "0.10"
 reqwest = { version = "0.11", features = ["blocking"] }
+anyhow = "1"
+somehow = "0.1"
