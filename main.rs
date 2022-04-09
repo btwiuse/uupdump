@@ -41,8 +41,9 @@ fn main() -> HResult {
 
     // println!("{}", table);
     let table = table_extract::Table::find_by_headers(&table, &["Build"]).unwrap();
+    let mut rows = Vec::<Row>::new();
     for row in &table {
-        if let [build, _arch, date, id] = row.iter().collect::<Vec<_>>()[..] {
+        if let [build, arch, date, id] = row.iter().collect::<Vec<_>>()[..] {
             let builds = html_editor::parse(&build)?;
             if let [_, html_editor::Node::Element {
                 name: _,
@@ -60,7 +61,13 @@ fn main() -> HResult {
                     {
                         if let html_editor::Node::Text(ref id_text) = nodes[0] {
                             // println!("{build_text: <80} {id_text: <44} {date}");
-                            println!("{build_text: <80} {date}");
+                            // println!("{build_text: <80} {date}");
+                            rows.push(Row {
+                                build: build_text.to_string(),
+                                arch: arch.to_string(),
+                                date: date.to_string(),
+                                id: id_text.to_string(),
+                            })
                         }
                     }
                 }
@@ -76,5 +83,91 @@ fn main() -> HResult {
         }
         */
     }
+    // let R: Vec<Row> = rows.clone();
+    /*
+        if let Some(row) = select_one(rows.into_iter()) {
+            println!("{}", row.text());
+        }
+    */
+    {
+        use dialoguer::console::Term;
+        use dialoguer::{theme::ColorfulTheme, Select};
+        let selection = Select::with_theme(&ColorfulTheme::default())
+            .items(&rows.clone())
+            .default(0)
+            .interact_on_opt(&Term::stderr())?;
+        if let Some(index) = selection {
+            println!("{}", rows[index].id);
+        }
+    }
     Ok(())
+}
+
+#[derive(Clone, Debug)]
+struct Row {
+    pub build: String,
+    pub arch: String,
+    pub date: String,
+    pub id: String,
+}
+
+impl ToString for Row {
+    fn to_string(&self) -> String {
+        format!(
+            "{: <8} {: <80} {: <44} {}",
+            self.arch, self.build, self.id, self.date
+        )
+        .clone()
+    }
+}
+
+impl std::convert::AsRef<str> for &Row {
+    fn as_ref(&self) -> &str {
+        let a = &self.clone().build;
+        &a
+    }
+}
+
+impl skim::SkimItem for Row {
+    fn text(&self) -> skim::prelude::Cow<str> {
+        skim::prelude::Cow::from(self.id.clone())
+    }
+    fn display(&self, _: skim::DisplayContext) -> skim::AnsiString {
+        format!(
+            "{: <80} {: <8} {} {}",
+            self.build, self.arch, self.date, self.id
+        )
+        .into()
+    }
+}
+
+/// select one from an iterator of SkimItem
+///
+/// <https://github.com/DanSnow/github-release-download/blob/99d876ca3acc869d13e3dda0c0558cef6ad4acc5/src/bin/grd.rs>
+use std::sync::Arc;
+pub fn select_one<T: skim::SkimItem, I: IntoIterator<Item = T>>(
+    items: I,
+) -> Option<Arc<dyn skim::SkimItem>> {
+    let items = items
+        .into_iter()
+        .map(|x| Arc::new(x) as Arc<dyn skim::SkimItem>)
+        .collect::<Vec<Arc<dyn skim::SkimItem>>>();
+    let (tx, rx) = skim::prelude::bounded(32);
+    std::thread::spawn(move || {
+        for item in items {
+            if tx.send(item).is_err() {
+                break;
+            }
+        }
+    });
+    let items = skim::Skim::run_with(&skim::SkimOptions::default(), Some(rx));
+    if let Some(ref inner) = items {
+        if inner.is_abort {
+            return None;
+        }
+    }
+    let items = items
+        .map(|output| output.selected_items)
+        .unwrap_or_else(Vec::new);
+    items.into_iter().next()
 }
