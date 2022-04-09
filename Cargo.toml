@@ -13,3 +13,5 @@ path = "main.rs"
 
 [dependencies]
 html_editor = "0.4"
+rphtml = "0.5"
+table-extract = "0.2"
