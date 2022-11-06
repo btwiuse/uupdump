@@ -26,9 +26,6 @@ dl(){
 dump(){
   uuid="$1"
   if ! [[ -n "$uuid" ]]; then
-    uuid="$(uupdump)"
-  fi
-  if ! [[ -n "$uuid" ]]; then
     echo 'wrong num of args'
     return
   fi
