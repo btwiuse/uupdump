@@ -30,7 +30,7 @@ dump(){
     return
   fi
   echo curl -sL "https://uupdump.net/get.php?id=${uuid}&pack=en-us&edition=professional"
-  curl -sL "https://uupdump.net/get.php?id=${uuid}&pack=en-us&edition=professional" > zip
+  dl ${uuid} > zip
   cat zip | busybox unzip -o -
   bash ./uup_download_linux.sh
 }
