@@ -23,7 +23,7 @@ dl(){
     --compressed
 }
 
-dump(){
+dumpit(){
   uuid="$1"
   if ! [[ -n "$uuid" ]]; then
     echo 'wrong num of args'
@@ -35,4 +35,4 @@ dump(){
   bash ./uup_download_linux.sh
 }
 
-dump "$@"
+dumpit "$@"
