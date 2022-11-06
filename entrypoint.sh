@@ -9,7 +9,9 @@ dump(){
     echo 'wrong num of args'
     return
   fi
-  curl -sL "https://uupdump.net/get.php?id=${uuid}&pack=zh-cn&edition=PROFESSIONAL&autodl=2" | busybox unzip -o -
+  echo curl -sL "https://uupdump.net/get.php?id=${uuid}&pack=zh-cn&edition=PROFESSIONAL&autodl=2"
+  curl -sL "https://uupdump.net/get.php?id=${uuid}&pack=zh-cn&edition=PROFESSIONAL&autodl=2" > zip
+  cat zip | busybox unzip -o -
   bash ./uup_download_linux.sh
 }
 
